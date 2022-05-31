@@ -55,3 +55,67 @@
 // db.posts.updateOne({title:"Latin Is Dead"},{$set:{author:"CeasarRules"}});
 // db.posts.deleteOne({author:"CeasarRules"});
 // db.posts.find({}).limit(100)
+const findPost = (limit, skip, sortField, sortOrder, filterField, filterValue) => {
+    const Plimit = limit ? limit : 50;
+    const Pskip = skip ? skip : 0 ;
+     const Psort = sortField && sortOrder ? {[sortField]: sortOrder} : {};
+    const Pfilter = filterField && filterValue ? {[filterField]: filterValue} : {};
+    
+    let results = [];
+    results = db.post_post.find(Pfilter).limit(limit).skip(Pskip).sort(Psort).toArray();
+    return results ;
+}
+
+
+const postFind = (blogId) => {
+    const blogById = blogId ? {id:blogId}:{};
+    return db.post_post.find(blogById).toArray();
+    
+}
+
+
+let getPostsCollectionLength = () => {
+    return db.blogs50.count()
+}
+
+
+let blogPost = (title,text,arthor,category)  => {
+    const postTitle = title ? title : "";
+    const postText = text ? text :"";
+    const postArthor = arthor ?  arthor :"";
+    const postCategory = category ? category : "";
+ 
+ db.post_post.insertOne({
+     createdAt:new Date(),
+     title:postTitle,
+     text:postText,
+     arthor:postArthor,
+     category:postCategory,
+     lastEntry:new Date(),
+     id:getPostsCollectionLength() +1
+ })
+    
+}
+  
+  
+  let update = function(blogId, title, text, author, category){
+    let getData = db.post_post.find({id:blogId}) ; 
+   const postTitle = title ? title : getData.title;
+   const postText = text ? text : getData.tetxt;
+   const postAuthor = author ? author : getData.author;
+   const postCategory = category ? category : getData.category;
+   
+   
+    const updatePost = {
+      title:postTitle,
+      text:postText,
+      author:postAuthor,
+      category:postCategory,
+    lastModified: new Date()
+        
+    }
+    
+    return db.post_post.updateOne({id:blogId,$set: { updatePost }});
+      
+  }
+  
